@@ -1,7 +1,18 @@
 # exceptions to title case
 
 a
+an
+and
 as
+at
+but
+by
+for
+if
 in
+of
+on
+or
+per
 the
-without a worry
+to
