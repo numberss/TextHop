@@ -1,5 +1,7 @@
 // this is a program to convert a string to title case
 // e.g. "hello world" -> "Hello World"
+// i feel like this is quite inflated
+// maybe use structs or options?
 
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -8,12 +10,13 @@ fn to_title_case(string: &str) -> String {
     let mut result = String::new();
     let split_string = string.split(' ');
 
+    // in case the whole string is an exception
     if check_exceptions(string) {
         return string.to_string();
     }
 
     for word in split_string {
-        // check to see if its an exception
+        // check to see if the word is an exception
         if check_exceptions(word) {
             result.push(word.chars().next().unwrap());
             result.push(' ');
@@ -41,14 +44,8 @@ fn get_exceptions() -> Vec<String> {
     for line in reader.lines() {
         let line = line.unwrap();
         // skip comments and empty lines
-        if line.starts_with('#') || line.trim().is_empty() {
-            continue;
-        }
-        // remove whitespace
-        let trimmed = line.trim();
-
-        if !trimmed.is_empty() && !trimmed.starts_with('#') {
-            exceptions.push(trimmed.to_string());
+        if !line.is_empty() && !line.starts_with('#') {
+            exceptions.push(line.to_string());
         }
     }
     exceptions
@@ -56,11 +53,17 @@ fn get_exceptions() -> Vec<String> {
 
 fn check_exceptions(string: &str) -> bool {
     let exceptions = get_exceptions();
-    exceptions.contains(&string.to_string())
+    let is_exception = exceptions.contains(&string.to_string());
+    println!("{} is an exception: {}\n", string, is_exception);
+    is_exception
 }
 
 fn main() {
-    let input = "hello  world from   rust";
+    for exception in get_exceptions() {
+        println!("Exception: {}", exception);
+    }
+
+    let input = "without a worry in the world";
     let output = to_title_case(input);
     println!("{}", output);
 }
