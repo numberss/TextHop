@@ -1,0 +1,7 @@
+# exceptions to title case
+
+a
+as
+in
+the
+without a worry
