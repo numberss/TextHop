@@ -63,7 +63,11 @@ fn check_exceptions(string: &str) -> bool {
 }
 
 fn main() {
-    let input = "without a worry";
-    let output = to_title_case(input);
-    println!("{}", output);
+    // taking random map names from https://maps.strafes.net/maps with random capitalisation
+    let test_inputs = vec!["tHe 24th", "ASyLum", "4 aM",];
+    
+    for input in test_inputs {
+        let output = to_title_case(input);
+        println!("{}", output);
+    }
 }

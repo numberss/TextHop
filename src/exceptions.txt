@@ -1,7 +1,28 @@
 # exceptions to title case
 
+# short words:
 a
+an
+and
 as
+at
+but
+by
+for
+if
 in
+of
+on
+or
+per
 the
-without a worry
+to
+
+# abbreviations:
+AM
+PM
+etc
+vs
+
+# specific map names:
+3V3R51NC3
