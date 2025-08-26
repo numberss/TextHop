@@ -1,5 +1,6 @@
 # exceptions to title case
 
+# short words:
 a
 an
 and
@@ -16,3 +17,12 @@ or
 per
 the
 to
+
+# abbreviations:
+AM
+PM
+etc
+vs
+
+# specific map names:
+3V3R51NC3
