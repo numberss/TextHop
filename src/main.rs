@@ -8,7 +8,7 @@ use std::io::{BufRead, BufReader};
 
 const EXCEPTIONS_FILE: &str = "./exceptions.txt";
 // i've removed some stuff like '!' and ',' because they come after the word
-const SEPARATORS: &[char] = &[' '];
+// const SEPARATORS: &[char] = &[' ', '-', '_', '(', ')', '[', ']', '{', '}', '/'];
 
 fn to_title_case(string: &str) -> String {
     // in case the whole string is an exception
@@ -16,6 +16,7 @@ fn to_title_case(string: &str) -> String {
     if is_exception{
         return checked_string.to_string();
     }
+
     
     let mut result = String::new();
     
@@ -25,7 +26,10 @@ fn to_title_case(string: &str) -> String {
     // there is string.match_indices() which gives the index of the separator
     // would be useful for preserving punctuation
     // but im not sure how i would implement the char index into the final string
-    let split_string = string.split(SEPARATORS);
+    let split_string = string.split(' ');
+
+    // there is also this approach where we have multiple string.split()
+    // let sub_split_string = string.split(SEPARATORS);
 
     for (index, word) in split_string.enumerate() {
         let (is_exception, checked_string) = get_exception(word);
@@ -55,7 +59,7 @@ fn capitalise_word(word: &str) -> String {
     capital_word
 }
 
-// getting new exceptions every time is bad. need to fix
+// getting the list of exceptions every time is bad. need to fix
 fn exceptions_list() -> Vec<String> {
     let file = File::open(EXCEPTIONS_FILE).expect("Could not open exceptions.txt");
     let reader = BufReader::new(file);
