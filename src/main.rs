@@ -3,12 +3,19 @@
 // there are about 20 infinitely better ways to do this
 // but i did it my way and that is what matters :)
 
+// could take a string.match_indices() to find all the separators
+// then find the character directly after the separator and capitalise it
+// if the word is in the exceptions list, dont capitalise it
+// always capitalise the first word
+
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
 const EXCEPTIONS_FILE: &str = "./exceptions.txt";
-// i've removed some stuff like '!' and ',' because they come after the word
-// const SEPARATORS: &[char] = &[' ', '-', '_', '(', ')', '[', ']', '{', '}', '/'];
+const SEPARATORS: &[char] = &[' ', '-', '_', '(', ')', '[', ']', '{', '}', '/', '?', '!', ',', '.',];
+
+// let capitalise_after_non_space_separator = false;
+const CAPITALISE_AFTER_PUNCTIONATION: bool = false;
 
 fn to_title_case(string: &str) -> String {
     let string = string.trim();
@@ -29,9 +36,6 @@ fn to_title_case(string: &str) -> String {
     // but im not sure how i would implement the char index into the final string
     let split_string = string.split(' ');
 
-    // there is also this approach where we have multiple string.split()
-    // let sub_split_string = string.split(SEPARATORS);
-
     for (index, word) in split_string.enumerate() {
         let (is_exception, checked_string) = get_exception(word);
         // if its the first word, still capitalise it
@@ -45,6 +49,64 @@ fn to_title_case(string: &str) -> String {
     }
     result.trim().to_string()
 }
+
+fn new_title_case(string: &str) -> String {
+    // handle exceptions first
+    let string = string.trim();
+    let (is_exception, checked_string) = get_exception(string);
+    if is_exception {
+        return checked_string.to_string();
+    }
+
+    let mut new_string = String::new();
+
+    let mut char_indices = string.char_indices().peekable();
+    while let Some((index, c)) = char_indices.next() {
+        // the first word will always be capitalised
+        if index == 0 && c.is_alphabetic() {
+            new_string.push(c.to_ascii_uppercase());
+            continue;
+        }
+
+        
+        // will loop through the string and find the next separator
+        // if there is a next character, push the separator and make that character uppercase
+        if SEPARATORS.contains(&c) && let Some((i, next_char)) = char_indices.peek() {
+            // handle exceptions first
+            let word = &string[index+1..];
+            let word = &word[0..word.find(|ch: char| SEPARATORS.contains(&ch)).unwrap_or(word.len())];
+    
+            let (is_exception, exception) = get_exception(word);
+            if is_exception{
+                new_string.push(c);
+                new_string.push_str(&exception);
+                for _ in 0..exception.len() {
+                    char_indices.next();
+                }
+                continue;
+            }
+
+            // trim whitespace so its only 1 space
+            if c == ' ' && next_char == &' ' {
+                continue;
+            } else if string.chars().collect::<Vec<char>>()[i-1] != ' ' && !CAPITALISE_AFTER_PUNCTIONATION {
+                new_string.push(c);
+                continue;
+            };
+            new_string.push(c);
+
+            if next_char.is_alphabetic() {
+                new_string.push(next_char.to_ascii_uppercase());
+                // skip the next char as we have already added it
+                char_indices.next();
+            }
+            continue;
+        }
+        new_string.push(c.to_ascii_lowercase());
+    }
+    new_string
+}
+
 
 fn capitalise_word(word: &str) -> String {
     let mut capital_word = String::new();
@@ -90,15 +152,21 @@ fn get_exception(string: &str) -> (bool, String) {
 fn main() {
     println!("\n");
     // taking random map names from https://maps.strafes.net/maps with random capitalisation
-    let test_inputs = vec!["tHe 24th", "ASyLum", "4   aM",
-                                             "3V3R51NC3", "3V3r51nC3 ", "  Tide2",
-                                             "quiCkly, quiCKlY", "not a Small maP", "004",
-                                             "baDges2", "ka-cHow! ", ":3", "quaRry (CS:S)",
-                                             "x-rAY", "karakai jOzu   no taKagi-san",
+    let test_inputs = vec!["tHe 24th", "4   aM", "3V3r51nC3 ",
+                                             "quiCkly, quiCKlY", "004",
+                                             "ka-cHow! ", ":3", "quaRry (CS:S)",
+                                             "karakai jOzu   no taKagi-san",
                                              "O-oh hi-i  t-there, J-J-Jill"];
     
-    for input in test_inputs {
+    for input in &test_inputs {
         let output = to_title_case(input);
+        println!("{}", output);
+    }
+    println!("\n");
+    println!("Using new_title_case function:\n");
+
+    for input in test_inputs {
+        let output = new_title_case(input);
         println!("{}", output);
     }
     println!("\n");
