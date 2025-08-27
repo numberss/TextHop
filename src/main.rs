@@ -1,5 +1,7 @@
 // this is a program to convert a string to title case
 // e.g. "hello world" -> "Hello World"
+// there are about 20 infinitely better ways to do this
+// but i did it my way and that is what matters :)
 
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -10,26 +12,29 @@ const SEPARATORS: &[char] = &[' '];
 
 fn to_title_case(string: &str) -> String {
     // in case the whole string is an exception
-    let checked_string = get_exception(string);
-    if checked_string != string {
+    let (is_exception, checked_string) = get_exception(string);
+    if is_exception{
         return checked_string.to_string();
     }
     
     let mut result = String::new();
     
+    // currently struggling to have a good way to get words inside of ()
+    // e.g. Quarry (CS:S) -> Quarry (cs:s) because '(' is the first char of the word
+    // using .split() removes the separator chars, so i would lose the '('
     // there is string.match_indices() which gives the index of the separator
     // would be useful for preserving punctuation
     // but im not sure how i would implement the char index into the final string
     let split_string = string.split(SEPARATORS);
 
-    for word in split_string {
-        // check to see if the word is an exception
-        let checked_string = get_exception(word);
-        if checked_string != word {
+    for (index, word) in split_string.enumerate() {
+        let (is_exception, checked_string) = get_exception(word);
+        // if its the first word, still capitalise it
+        if is_exception && index != 0 {
             result.push_str(&checked_string);
             result.push(' ');
             continue;
-        };
+        }
 
         result.push_str(&capitalise_word(&checked_string));
     }
@@ -66,15 +71,15 @@ fn exceptions_list() -> Vec<String> {
     exceptions
 }
 
-fn get_exception(string: &str) -> String {
+fn get_exception(string: &str) -> (bool, String) {
     let exceptions = exceptions_list();
     // is in exceptions list or is a number
     for exception in exceptions {
         if string.eq_ignore_ascii_case(&exception) {
-            return exception;
+            return (true, exception);
         }
     }
-    string.to_string()
+    (false, string.to_string())
 }
 
 fn main() {
