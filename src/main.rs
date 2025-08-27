@@ -11,13 +11,14 @@ const EXCEPTIONS_FILE: &str = "./exceptions.txt";
 // const SEPARATORS: &[char] = &[' ', '-', '_', '(', ')', '[', ']', '{', '}', '/'];
 
 fn to_title_case(string: &str) -> String {
+    let string = string.trim();
     // in case the whole string is an exception
     let (is_exception, checked_string) = get_exception(string);
     if is_exception{
         return checked_string.to_string();
     }
 
-    
+
     let mut result = String::new();
     
     // currently struggling to have a good way to get words inside of ()
@@ -89,12 +90,12 @@ fn get_exception(string: &str) -> (bool, String) {
 fn main() {
     println!("\n");
     // taking random map names from https://maps.strafes.net/maps with random capitalisation
-    let test_inputs = vec!["tHe 24th", "ASyLum", "4 aM",
-                                             "3V3R51NC3", "Tide2", "quiCkly, quiCKlY",
-                                             "not a Small maP", "004", "baDges2",
-                                             "ka-cHow!", ":3", "quaRry (CS:S)",
-                                             "x-rAY", "karakai jOzu no taKagi-san",
-                                             "O-oh hi-i t-there, J-J-Jill"];
+    let test_inputs = vec!["tHe 24th", "ASyLum", "4   aM",
+                                             "3V3R51NC3", "3V3r51nC3 ", "  Tide2",
+                                             "quiCkly, quiCKlY", "not a Small maP", "004",
+                                             "baDges2", "ka-cHow! ", ":3", "quaRry (CS:S)",
+                                             "x-rAY", "karakai jOzu   no taKagi-san",
+                                             "O-oh hi-i  t-there, J-J-Jill"];
     
     for input in test_inputs {
         let output = to_title_case(input);
