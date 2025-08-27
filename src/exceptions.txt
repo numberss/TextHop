@@ -23,6 +23,10 @@ AM
 PM
 etc
 vs
+CS:S
+CSS
+CSGO
+CS:GO
 
 # specific map names:
 3V3R51NC3
