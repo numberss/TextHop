@@ -14,9 +14,10 @@ use std::io::{BufRead, BufReader};
 const EXCEPTIONS_FILE: &str = "./exceptions.txt";
 const SEPARATORS: &[char] = &[' ', '-', '_', '(', ')', '[', ']', '{', '}', '/', '?', '!', ',', '.',];
 
-// let capitalise_after_non_space_separator = false;
-const CAPITALISE_AFTER_PUNCTIONATION: bool = false;
 
+const CAPITALISE_AFTER_PUNCTIONATION: bool = true;
+
+// title case using .slip() and ' ' as the only separator
 fn to_title_case(string: &str) -> String {
     let string = string.trim();
     // in case the whole string is an exception
@@ -50,7 +51,8 @@ fn to_title_case(string: &str) -> String {
     result.trim().to_string()
 }
 
-fn new_title_case(string: &str) -> String {
+// new title case using chars and a list of separators
+fn char_title_case(string: &str) -> String {
     // handle exceptions first
     let string = string.trim();
     let (is_exception, checked_string) = get_exception(string);
@@ -97,7 +99,7 @@ fn new_title_case(string: &str) -> String {
 
             if next_char.is_alphabetic() {
                 new_string.push(next_char.to_ascii_uppercase());
-                // skip the next char as we have already added it
+                // skip the next char it got added
                 char_indices.next();
             }
             continue;
@@ -107,7 +109,9 @@ fn new_title_case(string: &str) -> String {
     new_string
 }
 
-
+// capitalises the first letter of a word and makes the rest lowercase
+// adds a space to the end
+// this is for title_case()
 fn capitalise_word(word: &str) -> String {
     let mut capital_word = String::new();
     let mut chars = word.chars();
@@ -123,6 +127,7 @@ fn capitalise_word(word: &str) -> String {
 }
 
 // getting the list of exceptions every time is bad. need to fix
+// gets the list of exceptions from exceptions.txt
 fn exceptions_list() -> Vec<String> {
     let file = File::open(EXCEPTIONS_FILE).expect("Could not open exceptions.txt");
     let reader = BufReader::new(file);
@@ -138,6 +143,7 @@ fn exceptions_list() -> Vec<String> {
     exceptions
 }
 
+// gets whether a given string is an exception 
 fn get_exception(string: &str) -> (bool, String) {
     let exceptions = exceptions_list();
     // is in exceptions list or is a number
@@ -163,10 +169,10 @@ fn main() {
         println!("{}", output);
     }
     println!("\n");
-    println!("Using new_title_case function:\n");
+    println!("Using char_title_case function:\n");
 
     for input in test_inputs {
-        let output = new_title_case(input);
+        let output = char_title_case(input);
         println!("{}", output);
     }
     println!("\n");
