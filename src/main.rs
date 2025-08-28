@@ -14,8 +14,8 @@ use std::io::{BufRead, BufReader};
 const EXCEPTIONS_FILE: &str = "./exceptions.txt";
 const SEPARATORS: &[char] = &[' ', '-', '_', '(', ')', '[', ']', '{', '}', '/', '?', '!', ',', '.',];
 
-
 const CAPITALISE_AFTER_PUNCTIONATION: bool = true;
+
 
 // title case using .slip() and ' ' as the only separator
 fn to_title_case(string: &str) -> String {
@@ -26,14 +26,10 @@ fn to_title_case(string: &str) -> String {
         return checked_string.to_string();
     }
 
-
     let mut result = String::new();
     
-    // currently struggling to have a good way to get words inside of ()
-    // e.g. Quarry (CS:S) -> Quarry (cs:s) because '(' is the first char of the word
-    // using .split() removes the separator chars, so i would lose the '('
     // there is string.match_indices() which gives the index of the separator
-    // would be useful for preserving punctuation
+    // would be useful for keeping separators
     // but im not sure how i would implement the char index into the final string
     let split_string = string.split(' ');
 
@@ -70,13 +66,13 @@ fn char_title_case(string: &str) -> String {
             continue;
         }
 
-        
         // will loop through the string and find the next separator
         // if there is a next character, push the separator and make that character uppercase
         if SEPARATORS.contains(&c) && let Some((i, next_char)) = char_indices.peek() {
             // handle exceptions first
-            let word = &string[index+1..];
-            let word = &word[0..word.find(|ch: char| SEPARATORS.contains(&ch)).unwrap_or(word.len())];
+            // find the next chars until the next separator (should result in a whole word)
+            let mut word = &string[index+1..];
+            word = &word[0..word.find(|ch: char| SEPARATORS.contains(&ch)).unwrap_or(word.len())];
     
             let (is_exception, exception) = get_exception(word);
             if is_exception{
